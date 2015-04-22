@@ -158,48 +158,49 @@ main (int argc, char *argv[], char *environ[])
   if (strlen (user.term.ptr) < 1)
     user.term.ptr = "dumb";
 
-  snprintf(sysconfdir, BUFSIZ - 1, "%s/sudosh.conf", SYSCONFDIR);
+  snprintf (sysconfdir, BUFSIZ - 1, "%s/sudosh.conf", SYSCONFDIR);
   parse (&sudosh_option, sysconfdir);
 
-  while ((c = getopt(argc, argv, "c:hivV")) != EOF)
+  while ((c = getopt (argc, argv, "c:hivV")) != EOF)
     {
       switch (c)
 	{
 	case 'c':
-//		fprintf(stderr,"optarg is [%s]\n",optarg);
+//              fprintf(stderr,"optarg is [%s]\n",optarg);
 	  strncpy (user.from, user.pw->pw_name, BUFSIZ - 1);
 	  strncpy (c_str, optarg, BUFSIZ - 1);
-	  strncpy (c_command, optarg, BUFSIZ -1);
-	p=strchr(c_str, ' ');
-	if (p)
-		{
-		p[0]=0;
-//		fprintf(stderr,"args=%s\n",c_args);
-		}
-	
-	  if (c_str[0]!=0)
+	  strncpy (c_command, optarg, BUFSIZ - 1);
+	  p = strchr (c_str, ' ');
+	  if (p)
+	    {
+	      p[0] = 0;
+//              fprintf(stderr,"args=%s\n",c_args);
+	    }
+
+	  if (c_str[0] != 0)
 	    {
 // Test for methods of escape
-		if (strchr(c_command,';')!=NULL ||
-			strchr(c_command,'&') !=NULL ||
-			strchr(c_command,'|') !=NULL ||
-			strchr(c_command,'<') !=NULL ||
-			strchr(c_command,'>') !=NULL)
-			{
-	                 fprintf (stderr, "\"%s\" isn't allowed to be executed with process or redirect controls.\n",
-       	                    c_command);
-       		           exit (EXIT_FAILURE);
-			}
+	      if (strchr (c_command, ';') != NULL ||
+		  strchr (c_command, '&') != NULL ||
+		  strchr (c_command, '|') != NULL ||
+		  strchr (c_command, '<') != NULL ||
+		  strchr (c_command, '>') != NULL)
+		{
+		  fprintf (stderr,
+			   "\"%s\" isn't allowed to be executed with process or redirect controls.\n",
+			   c_command);
+		  exit (EXIT_FAILURE);
+		}
 
 
-//		fprintf(stderr,"Testing c\n");
-		// Make sure that c_str is in argallow
-		char argtest[BUFSIZ];
-			
-		sprintf(argtest,"$%.100s$",c_str);
-//		fprintf(stderr,"Testing for %s\n",argtest);
-		
-		if (strstr(sudosh_option.argallow,argtest)!=NULL)
+//              fprintf(stderr,"Testing c\n");
+	      // Make sure that c_str is in argallow
+	      char argtest[BUFSIZ];
+
+	      sprintf (argtest, "$%.100s$", c_str);
+//              fprintf(stderr,"Testing for %s\n",argtest);
+
+	      if (strstr (sudosh_option.argallow, argtest) != NULL)
 		{
 		  FILE *f;
 		  snprintf (script.name, (size_t) BUFSIZ - 1,
@@ -221,7 +222,7 @@ main (int argc, char *argv[], char *environ[])
 		  fprintf (f, "%.256s\n", c_str);
 		  fclose (f);
 
-		  execl ("/bin/sh", "sh", "-c", c_command,  (char *) 0);
+		  execl ("/bin/sh", "sh", "-c", c_command, (char *) 0);
 		  exit (EXIT_SUCCESS);
 		  break;
 		}
@@ -247,7 +248,8 @@ main (int argc, char *argv[], char *environ[])
 	  exit (EXIT_SUCCESS);
 	  break;
 	case 'i':
-	  fprintf(stdout,"Ignoring initialize option, this is done automatically\n");
+	  fprintf (stdout,
+		   "Ignoring initialize option, this is done automatically\n");
 	  exit (EXIT_SUCCESS);
 	  break;
 	case 'v':
@@ -279,10 +281,12 @@ main (int argc, char *argv[], char *environ[])
 	  exit (EXIT_FAILURE);
 	}
     }
-   else {
-	fprintf(stderr, "%s: couldn't get your controlling terminal.\n", progname);
-	exit(EXIT_FAILURE);
-   }
+  else
+    {
+      fprintf (stderr, "%s: couldn't get your controlling terminal.\n",
+	       progname);
+      exit (EXIT_FAILURE);
+    }
   user.pw = getpwuid ((uid_t) geteuid ());
 
   snprintf (user.home.str, BUFSIZ - 1, "HOME=%s", user.pw->pw_dir);
@@ -308,9 +312,9 @@ main (int argc, char *argv[], char *environ[])
       if (user.shell.ptr == NULL)
 	{
 	  fprintf (stderr, "Could not determine a valid shell.\n");
-	if (sudosh_option.priority!=-1)
-		  mysyslog (sudosh_option.priority,
-			    "Could not determine a valid shell");
+	  if (sudosh_option.priority != -1)
+	    mysyslog (sudosh_option.priority,
+		      "Could not determine a valid shell");
 	  exit (EXIT_FAILURE);
 	}
       else
@@ -326,9 +330,9 @@ main (int argc, char *argv[], char *environ[])
   if (stat ((const char *) user.shell.ptr, &s) == -1)
     {
       fprintf (stderr, "Shell %s doesn't exist.\n", user.shell.ptr);
-      if (sudosh_option.priority!=-1)
-	      mysyslog (sudosh_option.priority, "%s,%s: shell %s doesn't exist.",
-		user.from, ttyname (0), user.shell.ptr);
+      if (sudosh_option.priority != -1)
+	mysyslog (sudosh_option.priority, "%s,%s: shell %s doesn't exist.",
+		  user.from, ttyname (0), user.shell.ptr);
       exit (EXIT_FAILURE);
     }
 #else
@@ -341,7 +345,7 @@ main (int argc, char *argv[], char *environ[])
 
   script.bytes = 0;
   timing.bytes = 0;
-#ifdef RECORDINPUT  
+#ifdef RECORDINPUT
   input.bytes = 0;
 #endif
 
@@ -360,8 +364,8 @@ main (int argc, char *argv[], char *environ[])
 	    sudosh_option.fdl, rand);
 #endif
   snprintf (start_msg, BUFSIZ - 1,
-	    "starting session for %s as %s, tty %s, shell %s", user.from, user.to,
-	    ttyname (0), user.shell.ptr);
+	    "starting session for %s as %s, tty %s, shell %s", user.from,
+	    user.to, ttyname (0), user.shell.ptr);
 
   if ((script.fd =
        open (script.name, O_RDWR | O_CREAT | O_EXCL,
@@ -405,8 +409,8 @@ main (int argc, char *argv[], char *environ[])
       exit (EXIT_FAILURE);
     }
 #endif
-	if (sudosh_option.priority!=-1)
-		  mysyslog (sudosh_option.priority, start_msg);
+  if (sudosh_option.priority != -1)
+    mysyslog (sudosh_option.priority, start_msg);
   rawmode (0);
 
   if (findms (&pspair) < 0)
@@ -427,11 +431,11 @@ main (int argc, char *argv[], char *environ[])
       close (pspair.sfd);
     }
 
-  if (setuid (getuid ())!=0)
-	{
-	perror("setuid failed");
-	bye (EXIT_FAILURE);
-	}
+  if (setuid (getuid ()) != 0)
+    {
+      perror ("setuid failed");
+      bye (EXIT_FAILURE);
+    }
 
   memset (&sawinch, 0, sizeof sawinch);
   sawinch.sa_handler = newwinsize;
@@ -596,8 +600,8 @@ prepchild (struct pst *pst)
 
   if ((pst->sfd = open (pst->slave, O_RDWR)) < 0)
     exit (EXIT_FAILURE);
-  i=dup (0);
-  i=dup (0);
+  i = dup (0);
+  i = dup (0);
   for (i = 3; i < 100; ++i)
     close (i);
 
@@ -606,11 +610,11 @@ prepchild (struct pst *pst)
 #endif
   (void) ioctl (0, TIOCSWINSZ, &winorig);
 
-  if (setuid (getuid ())!=0)
-	{
-	perror("setuid failed");
-	bye(EXIT_FAILURE);
-	}
+  if (setuid (getuid ()) != 0)
+    {
+      perror ("setuid failed");
+      bye (EXIT_FAILURE);
+    }
 
   strncpy (newargv, user.shell.ptr, BUFSIZ - 1);
 
@@ -625,8 +629,7 @@ prepchild (struct pst *pst)
     snprintf (user.path.str, BUFSIZ - 1,
 	      "PATH=/sbin:/bin:/usr/sbin:/usr/bin");
   else
-    snprintf (user.path.str, BUFSIZ - 1,
-	      "PATH=/usr/bin:/bin:/usr/local/bin");
+    snprintf (user.path.str, BUFSIZ - 1, "PATH=/usr/bin:/bin:/usr/local/bin");
 
 #ifdef HAVE_SETPENV
   /* I love AIX - setpenv takes care of everything, including chdir() and the env */
@@ -640,10 +643,10 @@ prepchild (struct pst *pst)
 	fprintf (stderr, "Unable to chdir to /tmp\n");
     }
 
-  if (sudosh_option.clearenvironment==0)
-	execl (user.shell.ptr, b, (char *) 0);
+  if (sudosh_option.clearenvironment == 0)
+    execl (user.shell.ptr, b, (char *) 0);
   else
-	execle (user.shell.ptr, b, (char *) 0, env_list);
+    execle (user.shell.ptr, b, (char *) 0, env_list);
 
   abort ();
 }
@@ -691,9 +694,10 @@ bye (int signum)
   close (input.fd);
 #endif
 
-  if (sudosh_option.priority!=-1)
-  	mysyslog (sudosh_option.priority, "stopping session for %s as %s, tty %s, shell %s",
-	    user.from, user.to, ttyname(0), user.shell.ptr);
+  if (sudosh_option.priority != -1)
+    mysyslog (sudosh_option.priority,
+	      "stopping session for %s as %s, tty %s, shell %s", user.from,
+	      user.to, ttyname (0), user.shell.ptr);
   exit (signum);
 }
 
