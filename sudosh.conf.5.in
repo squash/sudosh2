@@ -1,0 +1,67 @@
+.\" Process this file with
+.\" groff -man -Tascii sudosh.1
+.\"
+
+.TH SUDOSH.CONF 5 "December 21th 2007" @VERSION@ "User Manuals"
+.SH NAME
+sudosh.conf \- configuration file for sudosh
+.SH DESCRIPTION
+.B sudosh.conf
+is used to configure sudosh.  The log directory, logging parameters and other default entries are stored within this file.
+.SH OPTIONS
+.IP logdir
+.RS
+logdir = /path/to/logging/directory
+Use this to set the default logging directory.  Both sudosh and sudosh-replay will use this to deteremine the logging directory.
+.RE
+.IP default shell
+.RS
+default shell = /path/to/default/shell
+This is the default shell sudosh will use if it cannot automatically determine which shell to use..RE
+.IP delimiter
+.RS
+delimiter = -
+This is the character you want to delimit the logging files with.  For example some environments may use ths underscore "_" or dash "-" in the login names.  If this is the case use the delimiter option to change the logging delimiter to another character such as a period "." or comma ","  The delimiter must be 1 character in length and cannot be alphanumeric.
+.RE
+.IP syslog.priority
+.RS
+syslog.priority = PRIORITY
+Use this option to set which syslog priority sudosh will use.  The default is LOG_INFO
+.RE
+.IP syslog.facility
+.RS
+syslog.facility = FACILITY
+Use this option to set which syslog facility sudosh will use.  The default is LOG_LOCAL2
+.RE
+.IP "-c arg allow"
+.RS
+-c arg allow = command
+This option can be used multiple times.  If you wish to use sudosh as a default login shell and want to allow users to copy files, you can allow them to use commands such as rsync and scp.  For each command you want to allow, use a new line and option.
+-c arg allow = scp
+-c arg allow = rsync
+.RE
+.SH EXAMPLES
+# Sudosh Configuration File
+.RE
+logdir                  = /var/log/sudosh
+.RE
+default shell           = /bin/sh
+.RE
+delimiter               = -
+.RE
+syslog.priority         = LOG_INFO
+.RE
+syslog.facility         = LOG_LOCAL2
+.RE
+
+# Allow Sudosh to execute -c arguements?  If so, what?
+.RE
+-c arg allow = scp
+.RE
+-c arg allow = rsync
+.SH AUTHOR
+Josh Grebe <josh@shortcutsolutions.net>
+Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+.SH "SEE ALSO"
+.BR sudosh-replay (8),
+.BR sudo (8)

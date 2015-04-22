@@ -1,0 +1,68 @@
+.\" Process this file with
+.\" groff -man -Tascii sudosh.1
+.\"
+
+.TH SUDOSH 1 "December 21th 2007" @VERSION@ "User Manuals"
+.SH NAME
+@PACKAGE_NAME@ \- works like a VCR and records shell sessions.
+.SH SYNOPSIS
+.B @PACKAGE_NAME@ [OPTION]...
+.SH DESCRIPTION
+.B @PACKAGE_NAME@
+can be used as a default login shell or as a filter.  sudosh takes advantage of pty devices in order to sit between the user's keyboard and a program, in this case a shell.  It was designed specifically to be used in conjunction with
+.BR sudo (8)
+and allows execution of a shell with logging.  It is basically a VCR and will record shell sessions and also has the ability to play back the sessions as they were originally recorded.  It records all input/output, keyboard input, and timing information so that the session acn be played back in the original format.
+.SH OPTIONS
+.IP -h
+display help synopsis and exit.
+.IP -i
+[deprecated] initialize LOGDIR - Ignored, will be removed in future version
+.IP -v
+show version information and exit.
+.SH ENVIRONMENT
+.IP SHELL
+.RS
+This shell will be used with sudosh is executed.  The shell must be listed in /etc/shells.  If the shell specified isn't listed in /etc/shells the invoking user's login shell from /etc/passwd will be used instead.
+
+AIX is different.  The SHELL is set and executed by setpenv() which reads the user's attributes from /etc/passwd.
+.SH BUGS
+sudosh is difficult to pronounce.
+.SH EXAMPLES
+.RE
+Record your own session as yourself.
+
+.RS
+$ sudosh
+.RE
+
+Obtain a root shell and record it.
+
+.RS
+$ sudo sudosh
+
+.RE
+Login as oracle and record the session.
+
+.RS
+$ sudo -u oracle sudosh
+
+.RE
+
+View recorded sessions.  See also
+.BR sudosh-replay (8)
+
+.RS
+# sudosh-replay
+
+.RE
+sudosh may also be used as a login shell. Make sure to set the proper default shell in sudosh.conf, and add sudosh to /etc/shells.
+
+
+
+.SH AUTHOR
+Josh Grebe <@PACKAGE_BUGREPORT@>
+Douglas Richard Hanks, Jr.
+.SH "SEE ALSO"
+.BR sudosh.conf (5)
+.BR sudosh-replay (8),
+.BR sudo (8)

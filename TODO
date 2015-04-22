@@ -1,0 +1,3 @@
+* Port sudosh-replay from Perl to C.
+* Add full support for -c for scp.
+* Add configuration file with lex and yacc.

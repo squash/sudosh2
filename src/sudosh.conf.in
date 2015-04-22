@@ -1,0 +1,11 @@
+# Sudosh Configuration File
+logdir			= @VLOGDIR@
+default shell		= /bin/sh
+delimiter		= -
+syslog.priority		= LOG_INFO
+syslog.facility		= LOG_LOCAL2
+clearenvironment	= yes
+
+# Allow Sudosh to execute -c arguments?  If so, what?
+-c arg allow = scp
+-c arg allow = rsync

@@ -1,0 +1,234 @@
+# $Id: ChangeLog,v 1.3 2010/07/09 20:37:13 squash Exp $
+2004-02-12 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* initial release 0.1.0
+
+2004-03-16 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added support for AIX > 4.3.3
+
+2004-09-14 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Submitted work to SourceForce.
+	* Submitted work to FreshMeat.
+	* Submitted Offical Announcement to SUDO mailing list.
+	* Submitted Offical Announcement to SAGE mailing list.
+
+2004-09-24 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* First stable release.
+	* Added support for Solaris.
+	* Added support for Linux.
+	* Added support for HP-UX.
+	* Added support for FreeBSD.
+
+2004-10-01 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Deleted sudosh.  Perl wasn't an appropiate programming lanaguage
+	  for this project.
+	* Ported sudosh to C.
+
+2004-10-02 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Successfully compiled sudosh to work with pty devices.
+
+2004-10-03 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Successfully compiled sudosh to work with syslog.
+
+2004-10-06 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added support for logging only keystrokes to syslog.
+	* Added function for logging both input and output, which is
+	  identical to the UNIX command script(5), to the file
+	  ~/.sudosh_history
+
+2004-10-09 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added GNU Autoconf support for cross-platform support.
+	* Ported code to work in Solaris environment.
+	* Submitted new release to SourceForge and FreshMeat.
+	* Submitted Offical Announcement to SUDO mailing list.
+	* Submitted Offical Announcement to SAGE mailing list.
+
+2004-10-12 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Corrected keystroke bug in sudosh.c.
+	* Corrected BS and DEL characters so that syslog is understandable
+	  when user issues BS or DEL keys. ^H^H^H was too ugly.
+	* Added support for AIX (removed MALLOC and REALLOC in configure.in)
+	* Added support for ~/.sudosh_input for the keystrokes.
+	* Added "DD/MM/YYYY HH:MM:SS LLL" format for ~/.sudosh_input
+
+2004-10-18 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Gave up on keystroke logging to syslog.  It's impossible to
+	  to trace the terminal to see if it's echoing keystrokes or not.
+	  Bottom line is that passwords can be written to syslog, so I
+	  removed this feature.  I had it secure under Linux, but AIX and
+	  Solaris were different in the nature that the terminal returned
+	  a ECHO when the ENTER key was pressed.
+	* Ditched the syslog for now.  Everything is localized.
+	* Added logdir automation to configure.in as well as host-type
+	  recognition.
+	* Added replay utility to playback sudosh sessions as they were
+	  originally recorded.
+
+2004-10-20 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Removed syslog.c.
+	* Added full support for AIX + gcc.
+	* Added full support for Generic Linux (RedHat, SuSE, Fedora, etc)
+	* Added full support for AMD64 SuSE 8.1.
+	* Added full support for SPARC SunOS Solaris 5.9.
+	* Added full support for x86 SunOS Solaris 5.9.
+	* Corrected sudosh-replay script.
+	* Verified 1.3 branch is ready for production servers.
+
+2004-10-21 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Cleaned the headers on sudosh.c
+	* Corrected AIX compile bug
+	* Corrected Solaris compile bug
+	* Added full support for ALPHA Linux
+	* Added full support for SPARC SunOS Solaris 5.8
+
+2004-10-24 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Fixed major security hole in SHELL environment variable.
+
+2004-10-25 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Fixed another major bug in the exec code.  This time the
+	  environment was blanked out and caused havic on the new shell.
+	* Added @PERL@ to the sudosh-replay so that Perl is automatically
+	  found and configured.
+
+2004-10-25 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added @PACKAGE_NAME@ and @VERSION@ and whatnot to sudosh-replay
+	  so that it can report its version as well.
+	* Added a configuration summary to configure.in
+
+2004-10-25 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added full support for the following:
+	* alpha-dec-osf4*
+	* alpha-dec-osf5.1*
+	* alpha-dec-linux
+	* hppa2.0w-hp-hpux11.11
+	* hppa2.0w-hp-hpux11.12
+	* ia64-hp-hpux11.23
+	* powerpc-ibm-aix4.3.3
+	* powerpc-ibm-aix5.1.0
+	* powerpc-ibm-aix5.2.0
+	* sparc-sun-solaris2.8
+	* sparc-sun-solaris2.9
+	* i*86-*-solaris2.9
+	* i*86-*-solaris2.8
+	* i*86-suse-linux (SuSE Enterprise Server 9.0)
+	* i*86-intel-linux (RedHat Enterprise Linux ES/AS 3.0)
+
+2004-10-27 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Changed configure.in to work with AIX again.
+
+2005-02-14 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added -i, --init flags to automatically configure LOGDIR
+
+2005-02-19 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Critical bug fix - sudosh was reporting the incorrect user when
+	  used with sudo.
+	* Added the "to user" field so that you know who the user sudosh'd to.
+	* Rewrote sudosh-replay to be more user-friendly.
+
+2005-03-05 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Changed the way sudosh handles LOGDIR permissions.
+	* Added bash_profile (Thanks Chris MacLeod)
+	* Added sudosh.spec (Thanks Chris MacLeod)
+
+2005-03-08 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added manpages for sudosh.1 and sudosh-replay.8
+
+2005-03-11 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added setenv("HOME", pw->pw_dir, 1); so that when you use sudosh
+	  the user can execute their own .profile and etc
+
+2005-03-11 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Corrected incorrect environment variable HOME.
+
+2005-03-22 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Cleaned up sudosh environment and tranferred the TERM variable.
+
+2005-04-12 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added functions to monitor sudosh log files and alert via syslog
+	  when someone attempts to delete or modify them.
+
+2005-04-13 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added ALERT sections to syslog when a user messes with the logging
+	  files.
+	* Corrected compiling error for Solaris
+
+2005-05-07 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Sudosh now calls shells as if they were a login shell.  Sudosh
+	  automatically sets the environment variables LOGNAME, USER, TERM,
+	  SHELL and PATH.
+	* Changes directory to user's HOME directory.
+	* Changed the way the shell is executed.  Added a dash '-' before the
+	  arguement, i.e. -ksh  This allows the shell to execute as if it were
+	  a login shell.
+	* Added a random string to the log files so that non-privileged users
+	  cannot delete their log files.
+	* Removed tampering code because it was not portable.
+	* General code cleanup.
+
+2005-05-09 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added setpenv() support for AIX.
+	* Corrected version typo.
+	* Added MAXWAIT for sudosh-replay by Luc Charland.
+	* Corrected chdir() to use the right HOME directory.
+
+2005-05-11 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added the ability to use sudosh as a login shell directly from
+	  /etc/passwd.  You may set the default shell with the
+	  --with-defshell option in configure.
+	* Added the --with-filedelimit option to configure if you need to
+	  change the default delimiter of '-'.  Some environment have
+	  '-' in the username, if so reset it to '_'.
+
+2005-05-12 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Corrected delimiter bug in sudosh-replay.
+	* Removed the dependancy for the TERM environment variable.
+	  Defaults to "dumb" if the TERM cannot be resolved.
+
+2005-05-19 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Changed FILEDELIMIT to FDL
+
+2005-05-20 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Ported about 90% of sudosh-replay to C.
+
+2005-05-21 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Changed all the NULLs to correct cast and 0, i.e. (char *) 0
+
+2005-05-30 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added parse.c.  Parses a configuration file with key = value pairs.
+	  Ignores comments starting with # as well as inline comments.
+
+2005-05-30 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Ported sudosh-replay to C.
+	* Added -ansi -pedantic -Wall to the CFLAGS.  Sudosh now compiles
+	  very cleanly.
+
+2005-06-12 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
+	* Added -c option to sudosh so that it can be called remotely
+	  so that commands such as rsync and scp can be executed.
+	* Made adjustments to sudosh-replay so that non-interactive commands
+	  are logged as well.
+	* Added configuration file support to sudosh
+	* Michael Grubb added (void) ioctl(pst->sfd, TIOCSCTTY, 0)
+
+2007-12-20 Josh Grebe <josh@shortcutsoloutions.net>
+	* Fixed crash bug on config file parsing
+	* Fixed non-reentrant pwent handling
+	* Removed chicken-and-egg requirement to create logdir
+	* Check/Fix logdir each time sudosh runs
+	* Created new Sourceforge project (sudosh2) and release v1.0
+
+2008-01-31 Josh Grebe <josh@shortcutsolutions.net>
+	* Rewrote config file parsing, new method is much simpler as well as safer.
+	* Whitespace in config files is now ignored, which shouldn't matter.
+	* Fixed a potential crash bug in sudosh.c
+	* When used as a login shell, the -c arg allow should always work. You can use
+	  it to allow things like scp, sftp, rsh, cvs, etc. 
+	* Updated README to reflect those changes.
+	* This will be v1.0.1
+
+2010-07-09 Josh Grebe <josh@shortcutsolutions.net>
+	* Released 1.0.4.
+	* Fixes some compile issues on non-Linux systems (Mostly HPUX)
+	* Fixes some file descriptor issues that affect non-Linux systems (Solaris!)
+	* Made input logging optinoal, and disabled by default. This is a configure option now.
+	* Added an updated .spec file
+
