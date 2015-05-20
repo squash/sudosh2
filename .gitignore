@@ -1,0 +1,14 @@
+Makefile
+*.o
+src/sudosh
+src/sudosh-replay
+src/sudosh.conf
+config.h
+config.log
+config.status
+sudosh-replay.8
+sudosh.1
+sudosh.conf.5
+stamp-h1
+src/.deps/
+autom4te.cache/
