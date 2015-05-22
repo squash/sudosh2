@@ -682,8 +682,8 @@ count_dur (session * s)
 	{			/* find the two numbers */
 	  LL ();
 	  fprintf (stderr,
-		   "[error]: line %i: invalid timing information (!= %%f %%i\\n)\n",
-		   s_time.line);
+		   "[error]: file %s, line %i: invalid timing information ('%s' != %%f %%i\\n)\n",
+		   s->time.str, s_time.line, buffer);
 	  exit (EXIT_FAILURE);
 	}
 
