@@ -124,6 +124,7 @@ main (int argc, char *argv[], char *environ[])
   double oldtime, newtime;
   struct stat ttybuf;
   int c;
+  char argtest[BUFSIZ];
 
   user.vshell = NULL;
   user.shell.ptr = NULL;
@@ -195,7 +196,6 @@ main (int argc, char *argv[], char *environ[])
 
 //              fprintf(stderr,"Testing c\n");
 	      // Make sure that c_str is in argallow
-	      char argtest[BUFSIZ];
 
 	      sprintf (argtest, "$%.100s$", c_str);
 //              fprintf(stderr,"Testing for %s\n",argtest);
