@@ -239,7 +239,7 @@ main (int argc, char **argv, char **environ)
 	    {
 	      snprintf (s->time.str, BUFSIZ - 1, "%s/%s",
 			config_option.logdir, dirp->d_name);
-	      count_dur (s);
+	      if (!argc) count_dur (s);
 	    }
 
 	  s->e = e;
@@ -263,7 +263,7 @@ main (int argc, char **argv, char **environ)
 	    {
 	      snprintf (s->time.str, BUFSIZ - 1, "%s/%s",
 			config_option.logdir, dirp->d_name);
-	      count_dur (s);
+	      if (!argc) count_dur (s);
 	    }
 	}
     }
