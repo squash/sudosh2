@@ -26,7 +26,7 @@ PURPOSE.  See the Open Software License for details.
 #define SIGCHLD	SIGCLD
 #endif
 
-#define WRITE(a, b, c) do_write(a, b, c, __FILE__, __LINE__)
+#define DO_WRITE(a, b, c) do_write(a, b, c, __FILE__, __LINE__)
 
 static struct termios termorig;
 static struct winsize winorig;
@@ -476,12 +476,12 @@ main (int argc, char *argv[], char *environ[])
 	{
 	  if ((n = read (pspair.mfd, iobuf, sizeof (iobuf))) > 0)
 	    {
-	      WRITE (1, iobuf, n);
-	      script.bytes += WRITE (script.fd, iobuf, n);
+	      DO_WRITE (1, iobuf, n);
+	      script.bytes += DO_WRITE (script.fd, iobuf, n);
 	    }
 	  newtime = tv.tv_sec + (double) tv.tv_usec / 1000000;
 	  snprintf (timing.str, BUFSIZ - 1, "%f %i\n", newtime - oldtime, n);
-	  timing.bytes += WRITE (timing.fd, &timing.str, strlen (timing.str));
+	  timing.bytes += DO_WRITE (timing.fd, &timing.str, strlen (timing.str));
 	  oldtime = newtime;
 
 	}
@@ -490,7 +490,7 @@ main (int argc, char *argv[], char *environ[])
 	{
 	  if ((n = read (0, iobuf, BUFSIZ)) > 0)
 	    {
-	      WRITE (pspair.mfd, iobuf, n);
+	      DO_WRITE (pspair.mfd, iobuf, n);
 #ifdef RECORDINPUT
 	      switch (*iobuf)
 		{
@@ -510,14 +510,14 @@ main (int argc, char *argv[], char *environ[])
 		  snprintf (input.str, BUFSIZ - 1, "(ESC)");
 		  break;
 		default:
-		  WRITE (input.fd, iobuf, 1);
+		  DO_WRITE (input.fd, iobuf, 1);
 		  written = 1;
 		  break;
 		}
 
 	      if (written == 0)
 		{
-		  WRITE (input.fd, &input.str, strlen (input.str));
+		  DO_WRITE (input.fd, &input.str, strlen (input.str));
 		}
 #endif
 	    }
