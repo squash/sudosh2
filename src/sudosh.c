@@ -21,6 +21,9 @@ PURPOSE.  See the Open Software License for details.
 #include "super.h"
 #include "struct.h"
 #include "getopt.h"
+#ifdef __linux__
+#include <linux/fs.h>
+#endif
 
 #ifndef SIGCHLD
 #define SIGCHLD	SIGCLD
@@ -85,6 +88,7 @@ static char *progname;
 char start_msg[BUFSIZ];
 
 int loginshell = 0;
+uid_t orig_euid;
 
 static void bye (int);
 static void newwinsize (int);
@@ -94,6 +98,9 @@ static int findms (struct pst *);
 void mysyslog (int, const char *, ...);
 char *rand2str (size_t len);
 int do_write (int, void *, size_t, char *, unsigned int);
+void set_file_flag(struct s_file *file, int flag);
+void unset_file_flag(struct s_file *file, int flag);
+void set_perms_and_close_file(struct s_file *file);
 
 extern void parse (option *, const char *);
 
@@ -140,7 +147,7 @@ main (int argc, char *argv[], char *environ[])
     loginshell = 1;
 
   /* Who are you? */
-  user.pw = getpwuid ((uid_t) geteuid ());
+  user.pw = getpwuid ((uid_t) getuid ());
 
   if (user.pw == NULL)
     {
@@ -287,7 +294,7 @@ main (int argc, char *argv[], char *environ[])
 	       progname);
       exit (EXIT_FAILURE);
     }
-  user.pw = getpwuid ((uid_t) geteuid ());
+  user.pw = getpwuid ((uid_t) getuid ());
 
   snprintf (user.home.str, BUFSIZ - 1, "HOME=%s", user.pw->pw_dir);
   strncpy (user.to_home.str, user.pw->pw_dir, BUFSIZ - 1);
@@ -368,7 +375,7 @@ main (int argc, char *argv[], char *environ[])
 	    user.to, ttyname (0), user.shell.ptr);
 
   if ((script.fd =
-       open (script.name, O_RDWR | O_CREAT | O_EXCL,
+       open (script.name, O_WRONLY | O_CREAT | O_EXCL,
 	     S_IRUSR | S_IWUSR)) == -1)
     {
       perror (script.name);
@@ -380,9 +387,10 @@ main (int argc, char *argv[], char *environ[])
       perror ("fstat script.fd");
       exit (EXIT_FAILURE);
     }
+  set_file_flag(&script, FS_APPEND_FL);
 
   if ((timing.fd =
-       open (timing.name, O_RDWR | O_CREAT | O_EXCL,
+       open (timing.name, O_WRONLY | O_CREAT | O_EXCL,
 	     S_IRUSR | S_IWUSR)) == -1)
     {
       perror (timing.name);
@@ -394,10 +402,11 @@ main (int argc, char *argv[], char *environ[])
       perror ("fstat timing.fd");
       exit (EXIT_FAILURE);
     }
+  set_file_flag(&timing, FS_APPEND_FL);
 
 #ifdef RECORDINPUT
   if ((input.fd =
-       open (input.name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)) == -1)
+       open (input.name, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)) == -1)
     {
       perror (input.name);
       bye (EXIT_FAILURE);
@@ -408,6 +417,7 @@ main (int argc, char *argv[], char *environ[])
       perror ("fstat input.fd");
       exit (EXIT_FAILURE);
     }
+  set_file_flag(&input, FS_APPEND_FL);
 #endif
   if (sudosh_option.priority != -1)
     mysyslog (sudosh_option.priority, start_msg);
@@ -431,7 +441,9 @@ main (int argc, char *argv[], char *environ[])
       close (pspair.sfd);
     }
 
-  if (setuid (getuid ()) != 0)
+  orig_euid = geteuid();
+
+  if (seteuid (getuid ()) != 0)
     {
       perror ("setuid failed");
       bye (EXIT_FAILURE);
@@ -688,11 +700,21 @@ bye (int signum)
   (void) ioctl (0, TCSETS, &termorig);
 #endif
 
-  close (timing.fd);
-  close (script.fd);
+  if (seteuid(orig_euid) != 0)
+    {
+      perror ("Reacquiring uid 0 failed");
+      bye (EXIT_FAILURE);
+    }
+  set_perms_and_close_file(&timing);
+  set_perms_and_close_file(&script);
 #ifdef RECORDINPUT
-  close (input.fd);
+  set_perms_and_close_file(&input);
 #endif
+  if (setuid(getuid()) != 0)
+    {
+      perror ("Dropping setuid 0 failed");
+      bye (EXIT_FAILURE);
+    }
 
   if (sudosh_option.priority != -1)
     mysyslog (sudosh_option.priority,
@@ -749,4 +771,41 @@ do_write (int fd, void *buf, size_t size, char *file, unsigned int line)
     }
 
   return s;
+}
+
+void set_file_flag(struct s_file *file, int flag) {
+  int flags = 0;
+  if (ioctl(file->fd, FS_IOC_GETFLAGS, &flags) == -1 ) {
+    printf("Unable to get inode flags for %s: %s\n", file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+  flags |= flag;
+  if (ioctl(file->fd, FS_IOC_SETFLAGS, &flags) == -1 ) {
+    printf("Unable to set inode flag %d for %s: %s\n", flag, file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+}
+
+void unset_file_flag(struct s_file *file, int flag) {
+  int flags = 0;
+  if (ioctl(file->fd, FS_IOC_GETFLAGS, &flags) == -1 ) {
+    printf("Unable to get inode flags for %s: %s\n", file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+  flags &= ~(flag);
+  if (ioctl(file->fd, FS_IOC_SETFLAGS, &flags) == -1 ) {
+    printf("Unable to unset inode flag %d for %s: %s\n", flag, file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+}
+
+void set_perms_and_close_file(struct s_file *file) {
+  unset_file_flag(file, FS_APPEND_FL);
+  if (fchmod (file->fd, S_IRUSR | S_IRGRP) == -1 ) {
+    printf("Unable to chmod file %s: %s\n", file->name, strerror(errno));
+  }
+  set_file_flag(file, FS_IMMUTABLE_FL);
+  if (close (file->fd) == -1 ) {
+    printf("Unable to close file %s: %s\n", file->name, strerror(errno));
+  }
 }
