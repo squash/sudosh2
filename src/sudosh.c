@@ -101,6 +101,7 @@ int do_write (int, void *, size_t, char *, unsigned int);
 void set_file_flag(struct s_file *file, int flag);
 void unset_file_flag(struct s_file *file, int flag);
 void set_perms_and_close_file(struct s_file *file);
+void set_perms_and_open_file(struct s_file *file);
 
 extern void parse (option *, const char *);
 
@@ -349,13 +350,6 @@ main (int argc, char *argv[], char *environ[])
   if (loginshell)
     user.shell.ptr = sudosh_option.defshell;
 
-
-  script.bytes = 0;
-  timing.bytes = 0;
-#ifdef RECORDINPUT
-  input.bytes = 0;
-#endif
-
   snprintf (script.name, (size_t) BUFSIZ - 1, "%s/%s%c%s%cscript%c%i%c%s",
 	    sudosh_option.logdir, user.from, sudosh_option.fdl, user.to,
 	    sudosh_option.fdl, sudosh_option.fdl, (int) now,
@@ -374,51 +368,12 @@ main (int argc, char *argv[], char *environ[])
 	    "starting session for %s as %s, tty %s, shell %s", user.from,
 	    user.to, ttyname (0), user.shell.ptr);
 
-  if ((script.fd =
-       open (script.name, O_WRONLY | O_CREAT | O_EXCL,
-	     S_IRUSR | S_IWUSR)) == -1)
-    {
-      perror (script.name);
-      bye (EXIT_FAILURE);
-    }
-
-  if (fstat (script.fd, &script.stat) == -1)
-    {
-      perror ("fstat script.fd");
-      exit (EXIT_FAILURE);
-    }
-  set_file_flag(&script, FS_APPEND_FL);
-
-  if ((timing.fd =
-       open (timing.name, O_WRONLY | O_CREAT | O_EXCL,
-	     S_IRUSR | S_IWUSR)) == -1)
-    {
-      perror (timing.name);
-      bye (EXIT_FAILURE);
-    }
-
-  if (fstat (timing.fd, &timing.stat) == -1)
-    {
-      perror ("fstat timing.fd");
-      exit (EXIT_FAILURE);
-    }
-  set_file_flag(&timing, FS_APPEND_FL);
-
+  set_perms_and_open_file(&script);
+  set_perms_and_open_file(&timing);
 #ifdef RECORDINPUT
-  if ((input.fd =
-       open (input.name, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)) == -1)
-    {
-      perror (input.name);
-      bye (EXIT_FAILURE);
-    }
-
-  if (fstat (input.fd, &input.stat) == -1)
-    {
-      perror ("fstat input.fd");
-      exit (EXIT_FAILURE);
-    }
-  set_file_flag(&input, FS_APPEND_FL);
+  set_perms_and_open_file(&input);
 #endif
+
   if (sudosh_option.priority != -1)
     mysyslog (sudosh_option.priority, start_msg);
   rawmode (0);
@@ -800,12 +755,36 @@ void unset_file_flag(struct s_file *file, int flag) {
 }
 
 void set_perms_and_close_file(struct s_file *file) {
+#ifdef __linux__
   unset_file_flag(file, FS_APPEND_FL);
+#endif
   if (fchmod (file->fd, S_IRUSR | S_IRGRP) == -1 ) {
     printf("Unable to chmod file %s: %s\n", file->name, strerror(errno));
   }
+#ifdef __linux__
   set_file_flag(file, FS_IMMUTABLE_FL);
+#endif
   if (close (file->fd) == -1 ) {
     printf("Unable to close file %s: %s\n", file->name, strerror(errno));
   }
+}
+
+void set_perms_and_open_file(struct s_file *file) {
+  file->bytes = 0;
+  if ((file->fd =
+       open (file->name, O_WRONLY | O_CREAT | O_EXCL,
+	     S_IRUSR | S_IWUSR)) == -1)
+    {
+      printf("Unable to open file %s: %s\n", file->name, strerror(errno));
+      exit (EXIT_FAILURE);
+    }
+
+  if (fstat (file->fd, &file->stat) == -1)
+    {
+      printf("Unable to stat file %s: %s\n", file->name, strerror(errno));
+      exit (EXIT_FAILURE);
+    }
+#ifdef __linux__
+    set_file_flag(file, FS_APPEND_FL);
+#endif
 }
