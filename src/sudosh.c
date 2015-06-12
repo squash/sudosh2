@@ -728,6 +728,7 @@ do_write (int fd, void *buf, size_t size, char *file, unsigned int line)
   return s;
 }
 
+#ifdef __linux__
 void set_file_flag(struct s_file *file, int flag) {
   int flags = 0;
   if (ioctl(file->fd, FS_IOC_GETFLAGS, &flags) == -1 ) {
@@ -753,6 +754,7 @@ void unset_file_flag(struct s_file *file, int flag) {
     exit (EXIT_FAILURE);
   }
 }
+#endif
 
 void set_perms_and_close_file(struct s_file *file) {
 #ifdef __linux__
