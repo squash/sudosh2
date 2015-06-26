@@ -18,6 +18,13 @@ Use this to set the default logging directory.  Both sudosh and sudosh-replay wi
 .RS
 default shell = /path/to/default/shell
 This is the default shell sudosh will use if it cannot automatically determine which shell to use..RE
+.RE
+.IP "immutable_recordings"
+.RS
+immutable_recordings = (enabled|disabled)
+If enabled sets the append only flag on new recordings and changes the recording to
+immutable once it is complete. Only available on Linux, default disabled.
+.RE
 .IP delimiter
 .RS
 delimiter = -
@@ -44,6 +51,8 @@ This option can be used multiple times.  If you wish to use sudosh as a default 
 # Sudosh Configuration File
 .RE
 logdir                  = /var/log/sudosh
+.RE
+immutable_recordings    = enabled
 .RE
 default shell           = /bin/sh
 .RE

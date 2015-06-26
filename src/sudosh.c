@@ -758,13 +758,15 @@ void unset_file_flag(struct s_file *file, int flag) {
 
 void set_perms_and_close_file(struct s_file *file) {
 #ifdef __linux__
-  unset_file_flag(file, FS_APPEND_FL);
+  if (sudosh_option.immutable_recordings)
+    unset_file_flag(file, FS_APPEND_FL);
 #endif
   if (fchmod (file->fd, S_IRUSR | S_IRGRP) == -1 ) {
     printf("Unable to chmod file %s: %s\n", file->name, strerror(errno));
   }
 #ifdef __linux__
-  set_file_flag(file, FS_IMMUTABLE_FL);
+  if (sudosh_option.immutable_recordings)
+    set_file_flag(file, FS_IMMUTABLE_FL);
 #endif
   if (close (file->fd) == -1 ) {
     printf("Unable to close file %s: %s\n", file->name, strerror(errno));
@@ -787,6 +789,7 @@ void set_perms_and_open_file(struct s_file *file) {
       exit (EXIT_FAILURE);
     }
 #ifdef __linux__
+  if (sudosh_option.immutable_recordings)
     set_file_flag(file, FS_APPEND_FL);
 #endif
 }

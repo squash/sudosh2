@@ -6,6 +6,7 @@ struct s_option {
     int priority;
     int facility;
     int clearenvironment;
+    int immutable_recordings;
     char argallow[BUFSIZ];
 };
 
