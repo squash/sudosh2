@@ -1,5 +1,5 @@
 .\" Process this file with
-.\" groff -man -Tascii sudosh.1
+.\" groff -man -Tascii sudosh.conf.5
 .\"
 
 .TH SUDOSH.CONF 5 "December 21th 2007" @VERSION@ "User Manuals"
