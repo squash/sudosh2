@@ -193,7 +193,8 @@ main (int argc, char *argv[], char *environ[])
 		  strchr (c_command, '&') != NULL ||
 		  strchr (c_command, '|') != NULL ||
 		  strchr (c_command, '<') != NULL ||
-		  strchr (c_command, '>') != NULL)
+		  strchr (c_command, '>') != NULL ||
+		  strchr (c_command, '`') != NULL)
 		{
 		  fprintf (stderr,
 			   "\"%s\" isn't allowed to be executed with process or redirect controls.\n",
@@ -208,7 +209,7 @@ main (int argc, char *argv[], char *environ[])
 	      sprintf (argtest, "$%.100s$", c_str);
 //              fprintf(stderr,"Testing for %s\n",argtest);
 
-	      if (strstr (sudosh_option.argallow, argtest) != NULL)
+	      if (strstr (sudosh_option.argallow, argtest) != NULL || strchr(sudosh_option.argallow, '*')!=NULL)
 		{
 		  FILE *f;
 		  snprintf (script.name, (size_t) BUFSIZ - 1,
