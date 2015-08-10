@@ -33,8 +33,8 @@ parse (option * c, const char *file)
       fprintf (stderr, "Warning: No config file found. Using compiled-in defaults:\n");
       fprintf (stderr, "Logdir\t%s\n", c->logdir);
       fprintf (stderr, "Default Shell:\t%s\n", c->defshell);
-      fprintf (stderr, "Syslog Disabled\t%s\n");
-      fprintf (stderr, "Immutable Recordings Disabled\t%s\n");
+      fprintf (stderr, "Syslog Disabled\n");
+      fprintf (stderr, "Immutable Recordings Disabled\n");
       // Just run with the defaults, ignore the rest
       return;
     }
