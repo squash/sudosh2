@@ -21,12 +21,15 @@ PURPOSE.  See the Open Software License for details.
 #include "super.h"
 #include "struct.h"
 #include "getopt.h"
+#ifdef __linux__
+#include <linux/fs.h>
+#endif
 
 #ifndef SIGCHLD
 #define SIGCHLD	SIGCLD
 #endif
 
-#define WRITE(a, b, c) do_write(a, b, c, __FILE__, __LINE__)
+#define DO_WRITE(a, b, c) do_write(a, b, c, __FILE__, __LINE__)
 
 static struct termios termorig;
 static struct winsize winorig;
@@ -85,6 +88,7 @@ static char *progname;
 char start_msg[BUFSIZ];
 
 int loginshell = 0;
+uid_t orig_euid;
 
 static void bye (int);
 static void newwinsize (int);
@@ -94,6 +98,10 @@ static int findms (struct pst *);
 void mysyslog (int, const char *, ...);
 char *rand2str (size_t len);
 int do_write (int, void *, size_t, char *, unsigned int);
+void set_file_flag(struct s_file *file, int flag);
+void unset_file_flag(struct s_file *file, int flag);
+void set_perms_and_close_file(struct s_file *file);
+void set_perms_and_open_file(struct s_file *file);
 
 extern void parse (option *, const char *);
 
@@ -140,7 +148,7 @@ main (int argc, char *argv[], char *environ[])
     loginshell = 1;
 
   /* Who are you? */
-  user.pw = getpwuid ((uid_t) geteuid ());
+  user.pw = getpwuid ((uid_t) getuid ());
 
   if (user.pw == NULL)
     {
@@ -287,7 +295,7 @@ main (int argc, char *argv[], char *environ[])
 	       progname);
       exit (EXIT_FAILURE);
     }
-  user.pw = getpwuid ((uid_t) geteuid ());
+  user.pw = getpwuid ((uid_t) getuid ());
 
   snprintf (user.home.str, BUFSIZ - 1, "HOME=%s", user.pw->pw_dir);
   strncpy (user.to_home.str, user.pw->pw_dir, BUFSIZ - 1);
@@ -342,13 +350,6 @@ main (int argc, char *argv[], char *environ[])
   if (loginshell)
     user.shell.ptr = sudosh_option.defshell;
 
-
-  script.bytes = 0;
-  timing.bytes = 0;
-#ifdef RECORDINPUT
-  input.bytes = 0;
-#endif
-
   snprintf (script.name, (size_t) BUFSIZ - 1, "%s/%s%c%s%cscript%c%i%c%s",
 	    sudosh_option.logdir, user.from, sudosh_option.fdl, user.to,
 	    sudosh_option.fdl, sudosh_option.fdl, (int) now,
@@ -367,48 +368,12 @@ main (int argc, char *argv[], char *environ[])
 	    "starting session for %s as %s, tty %s, shell %s", user.from,
 	    user.to, ttyname (0), user.shell.ptr);
 
-  if ((script.fd =
-       open (script.name, O_RDWR | O_CREAT | O_EXCL,
-	     S_IRUSR | S_IWUSR)) == -1)
-    {
-      perror (script.name);
-      bye (EXIT_FAILURE);
-    }
-
-  if (fstat (script.fd, &script.stat) == -1)
-    {
-      perror ("fstat script.fd");
-      exit (EXIT_FAILURE);
-    }
-
-  if ((timing.fd =
-       open (timing.name, O_RDWR | O_CREAT | O_EXCL,
-	     S_IRUSR | S_IWUSR)) == -1)
-    {
-      perror (timing.name);
-      bye (EXIT_FAILURE);
-    }
-
-  if (fstat (timing.fd, &timing.stat) == -1)
-    {
-      perror ("fstat timing.fd");
-      exit (EXIT_FAILURE);
-    }
-
+  set_perms_and_open_file(&script);
+  set_perms_and_open_file(&timing);
 #ifdef RECORDINPUT
-  if ((input.fd =
-       open (input.name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)) == -1)
-    {
-      perror (input.name);
-      bye (EXIT_FAILURE);
-    }
-
-  if (fstat (input.fd, &input.stat) == -1)
-    {
-      perror ("fstat input.fd");
-      exit (EXIT_FAILURE);
-    }
+  set_perms_and_open_file(&input);
 #endif
+
   if (sudosh_option.priority != -1)
     mysyslog (sudosh_option.priority, start_msg);
   rawmode (0);
@@ -431,7 +396,9 @@ main (int argc, char *argv[], char *environ[])
       close (pspair.sfd);
     }
 
-  if (setuid (getuid ()) != 0)
+  orig_euid = geteuid();
+
+  if (seteuid (getuid ()) != 0)
     {
       perror ("setuid failed");
       bye (EXIT_FAILURE);
@@ -476,12 +443,12 @@ main (int argc, char *argv[], char *environ[])
 	{
 	  if ((n = read (pspair.mfd, iobuf, sizeof (iobuf))) > 0)
 	    {
-	      WRITE (1, iobuf, n);
-	      script.bytes += WRITE (script.fd, iobuf, n);
+	      DO_WRITE (1, iobuf, n);
+	      script.bytes += DO_WRITE (script.fd, iobuf, n);
 	    }
 	  newtime = tv.tv_sec + (double) tv.tv_usec / 1000000;
 	  snprintf (timing.str, BUFSIZ - 1, "%f %i\n", newtime - oldtime, n);
-	  timing.bytes += WRITE (timing.fd, &timing.str, strlen (timing.str));
+	  timing.bytes += DO_WRITE (timing.fd, &timing.str, strlen (timing.str));
 	  oldtime = newtime;
 
 	}
@@ -490,7 +457,7 @@ main (int argc, char *argv[], char *environ[])
 	{
 	  if ((n = read (0, iobuf, BUFSIZ)) > 0)
 	    {
-	      WRITE (pspair.mfd, iobuf, n);
+	      DO_WRITE (pspair.mfd, iobuf, n);
 #ifdef RECORDINPUT
 	      switch (*iobuf)
 		{
@@ -510,14 +477,14 @@ main (int argc, char *argv[], char *environ[])
 		  snprintf (input.str, BUFSIZ - 1, "(ESC)");
 		  break;
 		default:
-		  WRITE (input.fd, iobuf, 1);
+		  DO_WRITE (input.fd, iobuf, 1);
 		  written = 1;
 		  break;
 		}
 
 	      if (written == 0)
 		{
-		  WRITE (input.fd, &input.str, strlen (input.str));
+		  DO_WRITE (input.fd, &input.str, strlen (input.str));
 		}
 #endif
 	    }
@@ -688,11 +655,21 @@ bye (int signum)
   (void) ioctl (0, TCSETS, &termorig);
 #endif
 
-  close (timing.fd);
-  close (script.fd);
+  if (seteuid(orig_euid) != 0)
+    {
+      perror ("Reacquiring uid 0 failed");
+      bye (EXIT_FAILURE);
+    }
+  set_perms_and_close_file(&timing);
+  set_perms_and_close_file(&script);
 #ifdef RECORDINPUT
-  close (input.fd);
+  set_perms_and_close_file(&input);
 #endif
+  if (setuid(getuid()) != 0)
+    {
+      perror ("Dropping setuid 0 failed");
+      bye (EXIT_FAILURE);
+    }
 
   if (sudosh_option.priority != -1)
     mysyslog (sudosh_option.priority,
@@ -749,4 +726,70 @@ do_write (int fd, void *buf, size_t size, char *file, unsigned int line)
     }
 
   return s;
+}
+
+#ifdef __linux__
+void set_file_flag(struct s_file *file, int flag) {
+  int flags = 0;
+  if (ioctl(file->fd, FS_IOC_GETFLAGS, &flags) == -1 ) {
+    printf("Unable to get inode flags for %s: %s\n", file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+  flags |= flag;
+  if (ioctl(file->fd, FS_IOC_SETFLAGS, &flags) == -1 ) {
+    printf("Unable to set inode flag %d for %s: %s\n", flag, file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+}
+
+void unset_file_flag(struct s_file *file, int flag) {
+  int flags = 0;
+  if (ioctl(file->fd, FS_IOC_GETFLAGS, &flags) == -1 ) {
+    printf("Unable to get inode flags for %s: %s\n", file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+  flags &= ~(flag);
+  if (ioctl(file->fd, FS_IOC_SETFLAGS, &flags) == -1 ) {
+    printf("Unable to unset inode flag %d for %s: %s\n", flag, file->name, strerror(errno));
+    exit (EXIT_FAILURE);
+  }
+}
+#endif
+
+void set_perms_and_close_file(struct s_file *file) {
+#ifdef __linux__
+  if (sudosh_option.immutable_recordings)
+    unset_file_flag(file, FS_APPEND_FL);
+#endif
+  if (fchmod (file->fd, S_IRUSR | S_IRGRP) == -1 ) {
+    printf("Unable to chmod file %s: %s\n", file->name, strerror(errno));
+  }
+#ifdef __linux__
+  if (sudosh_option.immutable_recordings)
+    set_file_flag(file, FS_IMMUTABLE_FL);
+#endif
+  if (close (file->fd) == -1 ) {
+    printf("Unable to close file %s: %s\n", file->name, strerror(errno));
+  }
+}
+
+void set_perms_and_open_file(struct s_file *file) {
+  file->bytes = 0;
+  if ((file->fd =
+       open (file->name, O_WRONLY | O_CREAT | O_EXCL,
+	     S_IRUSR | S_IWUSR)) == -1)
+    {
+      printf("Unable to open file %s: %s\n", file->name, strerror(errno));
+      exit (EXIT_FAILURE);
+    }
+
+  if (fstat (file->fd, &file->stat) == -1)
+    {
+      printf("Unable to stat file %s: %s\n", file->name, strerror(errno));
+      exit (EXIT_FAILURE);
+    }
+#ifdef __linux__
+  if (sudosh_option.immutable_recordings)
+    set_file_flag(file, FS_APPEND_FL);
+#endif
 }

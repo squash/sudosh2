@@ -26,12 +26,15 @@ parse (option * c, const char *file)
   c->priority = -1;		// No defaults here
   c->facility = -1;		// or here...
   c->clearenvironment = 1;
+  c->immutable_recordings = 0;
   f = fopen (file, "r");
   if (f == NULL)
     {
-      fprintf (stderr,
-	       "Warning: No config file found. Using compiled-in defaults:\nLogdir\t%s\nDefault Shell:\t%s\nSyslog disabled\n",
-	       c->logdir, c->defshell);
+      fprintf (stderr, "Warning: No config file found. Using compiled-in defaults:\n");
+      fprintf (stderr, "Logdir\t%s\n", c->logdir);
+      fprintf (stderr, "Default Shell:\t%s\n", c->defshell);
+      fprintf (stderr, "Syslog Disabled\t%s\n");
+      fprintf (stderr, "Immutable Recordings Disabled\t%s\n");
       // Just run with the defaults, ignore the rest
       return;
     }
@@ -88,6 +91,23 @@ parse (option * c, const char *file)
 
       if (strcmp (key, "delimiter") == 0)
 	c->fdl = value[0];
+
+      if (strcmp (key, "immutable_recordings") == 0)
+        {
+          if (strcmp (value, "enabled") == 0)
+            {
+              c->immutable_recordings = 1;
+            }
+          else if (strcmp (value, "disabled") == 0)
+            {
+              c->immutable_recordings = 0;
+            }
+          else
+            {
+              fprintf (stderr, "Wrong config option: 'immutable_recording = %s'\n", value);
+              exit (EXIT_FAILURE);
+            }
+        }
 
       if (strcmp (key, "syslog.facility") == 0)
 	{			// I really hate the way this is done...
