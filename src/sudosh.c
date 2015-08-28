@@ -458,6 +458,7 @@ main (int argc, char *argv[], char *environ[])
 	{
 	  if ((n = read (0, iobuf, BUFSIZ)) > 0)
 	    {
+              int written = 0;
 	      DO_WRITE (pspair.mfd, iobuf, n);
 #ifdef RECORDINPUT
 	      switch (*iobuf)
