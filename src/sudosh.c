@@ -102,6 +102,7 @@ void set_file_flag(struct s_file *file, int flag);
 void unset_file_flag(struct s_file *file, int flag);
 void set_perms_and_close_file(struct s_file *file);
 void set_perms_and_open_file(struct s_file *file);
+int written=0;
 
 extern void parse (option *, const char *);
 
