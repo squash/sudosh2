@@ -170,6 +170,14 @@ main (int argc, char **argv, char **environ)
       if (strcmp (dirp->d_name, ".") == 0 || strcmp (dirp->d_name, "..") == 0)
 	continue;
 
+      if (dirp->d_type == DT_DIR)
+        continue;
+       
+      char *last3 = &dirp->d_name[strlen(dirp->d_name)-3];
+      if (strcmp(last3, ".gz") == 0 || strcmp(last3, "bz2") == 0 ||strcmp(last3, ".xz") == 0)
+        { 
+          continue;
+ 	} 
 
       if (sscanf (dirp->d_name, match, from, to, type, &e, randstr) != 5)
 	{
