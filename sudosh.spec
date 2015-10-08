@@ -74,7 +74,7 @@ install -m 0744 sudosh.conf.tmp %{buildroot}/etc/sudosh.conf
 %dir %attr(0733 root root) /var/log/sudosh
 
 %changelog
-* Fri Apr 29 2015 - 1.0.6
+* Wed Apr 29 2015 - 1.0.6
 - Version bumped to 1.0.6
 * Fri Jul 09 2010 John Barton <jbarton@technicalworks.net> - 1.0.4-1
 - Update for version 1.0.4
