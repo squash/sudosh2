@@ -190,12 +190,12 @@ main (int argc, char *argv[], char *environ[])
 	  if (c_str[0] != 0)
 	    {
 // Test for methods of escape
-	      if (strchr (c_command, ';') != NULL ||
+	      if (strchr(sudosh_option.argallow, '*')==NULL && (strchr (c_command, ';') != NULL ||
 		  strchr (c_command, '&') != NULL ||
 		  strchr (c_command, '|') != NULL ||
 		  strchr (c_command, '<') != NULL ||
 		  strchr (c_command, '>') != NULL ||
-		  strchr (c_command, '`') != NULL)
+		  strchr (c_command, '`') != NULL))
 		{
 		  fprintf (stderr,
 			   "\"%s\" isn't allowed to be executed with process or redirect controls.\n",
