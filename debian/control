@@ -1,0 +1,14 @@
+Source: sudosh2
+Section: devel
+Priority: optional
+Maintainer: Max Mazur <mmaxur@mirantis.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.4
+Homepage: <https://github.com/squash/sudosh2>
+#Vcs-Git: git://git.debian.org/collab-maint/sudosh2.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/sudosh2.git;a=summary
+
+Package: sudosh2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: sudosh2 is an auditing layer between sudo and a user's shell
