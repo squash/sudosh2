@@ -1,0 +1,10 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: sudosh2
+Source: <https://github.com/squash/sudosh2>
+
+Files: *
+License: sudosh2 is under the Open Source License 2.0 
+  (which is very similar to BSD with Attribution), 
+  a copy of wihch is in the COPYING file. This is 
+  the license chosen by the original author.
+
