@@ -45,6 +45,11 @@ Use this option to set which syslog facility sudosh will use.  The default is LO
 -c arg allow = command
 This option can be used multiple times.  If you wish to use sudosh as a default login shell and want to allow users to copy files, you can allow them to use commands such as rsync and scp.  For each command you want to allow, use a new line and option. To allow all commands, use the special value of *.
 .RE
+.IP clearenvironment
+.RS
+clearenvironment = false
+Set this option to true to clear shell environment variables for incoming sessions. Set to false for things like ssh agent forwarding.
+
 .SH EXAMPLES
 # Sudosh Configuration File
 .RE
@@ -66,6 +71,12 @@ syslog.facility         = LOG_LOCAL2
 -c arg allow = scp
 .RE
 -c arg allow = rsync
+
+
+# Don't preserve environment variables
+.RE 
+clearenvironment = yes
+
 .SH AUTHOR
 Josh Grebe <josh@shortcutsolutions.net>
 Douglas Richard Hanks, Jr. <dhanks@gmail.com>
