@@ -6,7 +6,7 @@ User sessions are recorded and are available for later playback by the system ad
 
 sudosh2 does not record command history except when executed remotely via ssh's command option. If you're looking for something to just log commands, there are other tools for that.
 
-sudosh2 does not log sessions to syslog. If you need to consolidate session logs to a single location, logging them to a network filesystem is currently the only real option.
+sudosh2 does not log sessions to syslog. If you need to consolidate session logs to a single location, logging them to a network filesystem is currently the recommended option.
 
 sudosh2 was forked from sudosh, which was pulled by its original developer when a commercial company bought it from him. The initial project goals were to fix several major bugs, 
 make it 64 bit safe, and port to newer versions of Unix operating systems. The initial targets were RHEL5 and Solaris 10, but most recent free Unix systems should work perfectly.

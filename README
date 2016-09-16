@@ -83,15 +83,14 @@ dhanks@linux:~>
 Configure sudosh to be used as a login shell
 ============================================
 
-1) Set the default shell to be used as a login shell.  If you do not change
-   the default value /bin/sh will be used.  Use the --with-defshell option
-   to configure to set this value.
-
-2) If your system supports /etc/shells, add the absolute path to sudosh to
+1) If your system supports /etc/shells, add the absolute path to sudosh to
    the list.
 
-3) Edit /etc/passwd and set the user's shell to the absolute path of
+2) Edit /etc/passwd and set the user's shell to the absolute path of
    sudosh (generally /usr/local/bin/sudosh unless you change the --prefix)
+
+3) Set the "default shell" option in sudosh.conf to the shell you want
+   sudosh to execute.
 
 4) To allow things like scp, sft, cvs, rsync, etc, use the "-c arg allow" in
    sudosh.conf. The allowed command will need to match what is being sent to
