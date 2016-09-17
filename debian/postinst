@@ -17,7 +17,7 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-SUDOSH_LOG_DIR=/var/log/sudosh2
+SUDOSH_LOG_DIR=/var/log/sudosh
 
 case "$1" in
     configure)
