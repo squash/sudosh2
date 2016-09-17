@@ -12,3 +12,11 @@ sudosh.conf.5
 stamp-h1
 src/.deps/
 autom4te.cache/
+debian/files
+config.guess.dh-orig
+config.sub.dh-orig
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/sudosh2.debhelper.log
+debian/sudosh2.substvars
+debian/sudosh2/

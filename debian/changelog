@@ -1,4 +1,11 @@
-sudosh2 (2.0.1-1) trusty; urgency=low
+sudosh2 (1.0.6-2) trusty; urgency=low
+
+  * Modifications for package creation in non-root environment.
+  * Corrected errors and warnings reported by lintian.
+
+ -- Vaclav Tomec <vaclav.tomec@gmail.com>  Fri, 16 Sep 2016 16:13:01 +0200
+
+sudosh2 (1.0.6-1) trusty; urgency=low
 
   * Initial release 
 
