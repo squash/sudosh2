@@ -17,46 +17,14 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-CONFIG_FILE=/etc/sudosh.conf.sample
-
-create_config_file() {
-    TMP_CONFIG_FILE=`mktemp`
-
-    cat  <<EOF > ${TMP_CONFIG_FILE}
-# Sudosh Configuration File
-logdir                  = /var/log/sudosh
-default shell           = /bin/bash
-delimiter               = -
-syslog.priority         = LOG_NOTICE
-syslog.facility         = LOG_DAEMON
-
-# Allow Sudosh to execute -c arguements?  If so, what?
--c arg allow = scp
--c arg allow = sftp
--c arg allow = /usr/libexec/openssh/sftp-server
-# -c arg allow = rsync
-EOF
-}
-
-
-
-
-
-copy_config_file() {
-    create_config_file
-    D=`date +%Y-%m-%d__%H:%M:%S`
-    if [ -e "${CONFIG_FILE}" ]; then
-        cp ${TMP_CONFIG_FILE} ${CONFIG_FILE}-NEW-${D}
-        return 0
-    else
-         cp ${TMP_CONFIG_FILE} ${CONFIG_FILE}
-    fi
-}
-
+SUDOSH_LOG_DIR=/var/log/sudosh
 
 case "$1" in
     configure)
-        copy_config_file
+        if [ ! -d "$SUDOSH_LOG_DIR" ]; then
+            mkdir $SUDOSH_LOG_DIR
+            chmod 0733 $SUDOSH_LOG_DIR
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
