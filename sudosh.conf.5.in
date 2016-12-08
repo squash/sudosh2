@@ -14,7 +14,7 @@ is used to configure sudosh.  The log directory, logging parameters and other de
 logdir = /path/to/logging/directory
 Use this to set the default logging directory.  Both sudosh and sudosh-replay will use this to deteremine the logging directory.
 .RE
-.IP default shell
+.IP "default shell"
 .RS
 default shell = /path/to/default/shell
 This is the default shell sudosh will use if it cannot automatically determine which shell to use..RE
