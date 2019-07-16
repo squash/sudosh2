@@ -237,3 +237,6 @@
 	* Updated version numbers from errant 1.0.4 to 1.0.6
 	* Issue with errant : inserted into end of PATH fixed to prevent root's PATH from having :: by mistake and violating
 	  Center for Internet Security standard
+2015-04-29 Josh Grebe <josh@shortcutsolutions.net>
+	* Released 1.0.7
+	* Compialtion fies for compilers using -format-truncate

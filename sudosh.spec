@@ -2,7 +2,7 @@
 #
 %define origname sudosh2
 %define name sudosh2
-%define version 1.0.6
+%define version 1.0.7
 %define release 1.el5
 
 Name: %{name}
@@ -74,6 +74,9 @@ install -m 0744 sudosh.conf.tmp %{buildroot}/etc/sudosh.conf
 %dir %attr(0733 root root) /var/log/sudosh
 
 %changelog
+* Tue Jul 16 2019 - 1.0.7
+- Fixed ompilation errors for newer gcc
+- Version bumped to 1.0.7
 * Wed Apr 29 2015 - 1.0.6
 - Version bumped to 1.0.6
 * Fri Jul 09 2010 John Barton <jbarton@technicalworks.net> - 1.0.4-1
