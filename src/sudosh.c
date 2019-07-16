@@ -214,7 +214,7 @@ main (int argc, char *argv[], char *environ[])
 		{
 		  FILE *f;
 		  snprintf (script.name, (size_t) BUFSIZ - 1,
-			    "%s/%s%c%s%cinteractive%c%i%c%s",
+			    "%.1024s/%.128s%c%.128s%cinteractive%c%i%c%.128s",
 			    sudosh_option.logdir, user.from,
 			    sudosh_option.fdl, user.to, sudosh_option.fdl,
 			    sudosh_option.fdl, (int) now, sudosh_option.fdl,
@@ -352,22 +352,22 @@ main (int argc, char *argv[], char *environ[])
   if (loginshell)
     user.shell.ptr = sudosh_option.defshell;
 
-  snprintf (script.name, (size_t) BUFSIZ - 1, "%s/%s%c%s%cscript%c%i%c%s",
+  snprintf (script.name, (size_t) BUFSIZ - 1, "%.1024s/%.128s%c%.128s%cscript%c%i%c%.128s",
 	    sudosh_option.logdir, user.from, sudosh_option.fdl, user.to,
 	    sudosh_option.fdl, sudosh_option.fdl, (int) now,
 	    sudosh_option.fdl, rand);
-  snprintf (timing.name, (size_t) BUFSIZ - 1, "%s/%s%c%s%ctime%c%i%c%s",
+  snprintf (timing.name, (size_t) BUFSIZ - 1, "%.1024s/%.128s%c%.128s%ctime%c%i%c%.128s",
 	    sudosh_option.logdir, user.from, sudosh_option.fdl, user.to,
 	    sudosh_option.fdl, sudosh_option.fdl, (int) now,
 	    sudosh_option.fdl, rand);
 #ifdef RECORDINPUT
-  snprintf (input.name, (size_t) BUFSIZ - 1, "%s/%s%c%s%cinput%c%i%c%s",
+  snprintf (input.name, (size_t) BUFSIZ - 1, "%.1024s/%.128s%c%.128s%cinput%c%i%c%.128s",
 	    sudosh_option.logdir, user.from, sudosh_option.fdl, user.to,
 	    sudosh_option.fdl, sudosh_option.fdl, (int) now,
 	    sudosh_option.fdl, rand);
 #endif
   snprintf (start_msg, BUFSIZ - 1,
-	    "starting session for %s as %s, tty %s, shell %s", user.from,
+	    "starting session for %.128s as %.128s, tty %.128s, shell %.128s", user.from,
 	    user.to, ttyname (0), user.shell.ptr);
 
   set_perms_and_open_file(&script);
@@ -593,7 +593,7 @@ prepchild (struct pst *pst)
 
 
   snprintf (user.shell.str, BUFSIZ - 1, "SHELL=%s", user.shell.ptr);
-  snprintf (user.logname.str, BUFSIZ - 1, "LOGNAME=%s", user.to);
+  snprintf (user.logname.str, BUFSIZ - 1, "LOGNAME=%.128s", user.to);
   if (!strcmp (user.to, "root"))
     snprintf (user.path.str, BUFSIZ - 1,
 	      "PATH=/sbin:/bin:/usr/sbin:/usr/bin");

@@ -203,7 +203,7 @@ main (int argc, char **argv, char **environ)
 
 	  s->secs = 0;
 	  s->e = e;
-	  snprintf (s->script.str, BUFSIZ - 1, "%s/%s", config_option.logdir,
+	  snprintf (s->script.str, BUFSIZ - 1, "%.1024s/%.128s", config_option.logdir,
 		    dirp->d_name);
 
 	  f = fopen (s->script.str, "r");
@@ -242,11 +242,11 @@ main (int argc, char **argv, char **environ)
 	  s->secs = 0;
 
 	  if (!strcmp (type, "script"))
-	    snprintf (s->script.str, BUFSIZ - 1, "%s/%s",
+	    snprintf (s->script.str, BUFSIZ - 1, "%.1024s/%.128s",
 		      config_option.logdir, dirp->d_name);
 	  if (!strcmp (type, "time"))
 	    {
-	      snprintf (s->time.str, BUFSIZ - 1, "%s/%s",
+	      snprintf (s->time.str, BUFSIZ - 1, "%.1024s/%.128s",
 			config_option.logdir, dirp->d_name);
 	      if (!argc) count_dur (s);
 	    }
@@ -257,7 +257,7 @@ main (int argc, char **argv, char **environ)
 	  strncpy (s->type, type, BUFSIZ - 1);
 	  strncpy (s->randstr, randstr, BUFSIZ - 1);
 	  strftime (s->date, 20, "%m/%d/%Y %H:%M:%S", localtime (&s->e));
-	  snprintf (s->id, BUFSIZ - 1, "%s%c%s%c%ld%c%s", s->from,
+	  snprintf (s->id, BUFSIZ - 1, "%.128s%c%.128s%c%ld%c%.128s", s->from,
 		    config_option.fdl, s->to, config_option.fdl, s->e,
 		    config_option.fdl, s->randstr);
 
@@ -266,11 +266,11 @@ main (int argc, char **argv, char **environ)
       else
 	{
 	  if (!strcmp (type, "script"))
-	    snprintf (s->script.str, BUFSIZ - 1, "%s/%s",
+	    snprintf (s->script.str, BUFSIZ - 1, "%.1024s/%.128s",
 		      config_option.logdir, dirp->d_name);
 	  if (!strcmp (type, "time"))
 	    {
-	      snprintf (s->time.str, BUFSIZ - 1, "%s/%s",
+	      snprintf (s->time.str, BUFSIZ - 1, "%.1024s/%.128s",
 			config_option.logdir, dirp->d_name);
 	      if (!argc) count_dur (s);
 	    }
