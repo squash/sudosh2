@@ -167,7 +167,7 @@ main (int argc, char **argv, char **environ)
       char randstr[BUFSIZ];
       time_t e;
 
-      if (strcmp (dirp->d_name, ".") == 0 || strcmp (dirp->d_name, "..") == 0)
+      if (strncmp (dirp->d_name, ".", 1) == 0)
 	continue;
 
 #ifdef linux
