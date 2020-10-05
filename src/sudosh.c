@@ -677,6 +677,7 @@ bye (int signum)
     mysyslog (sudosh_option.priority,
 	      "stopping session for %s as %s, tty %s, shell %s", user.from,
 	      user.to, ttyname (0), user.shell.ptr);
+  if (signum==SIGCHLD) exit(0);
   exit (signum);
 }
 
