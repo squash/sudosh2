@@ -43,3 +43,26 @@ mklogdir (char *logdir)
       fprintf (stderr, "[info]: chmod 0733 directory %s\n", logdir);
     }
 }
+
+void validateLogdir(char *logdir)
+{
+	struct stat logdir_stat;
+
+	/* check everything at once, attempt to fix if incorrect, die if it cannot be fixed */
+	if (((stat(logdir, &logdir_stat)) == -1) || !(logdir_stat.st_mode & S_IFDIR))
+		mklogdir(logdir);
+
+	if ((stat(logdir, &logdir_stat)) == -1)
+	{
+		fprintf(stderr, "Fatal error - logdir %s invalid: %s\n", logdir,
+				strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	if (!(logdir_stat.st_mode & S_IFDIR))
+	{
+		fprintf(stderr, "logdir '%s' is not a directory.\n", logdir);
+		exit(EXIT_FAILURE);
+	}
+
+}

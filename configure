@@ -2368,7 +2368,7 @@ test -n "$target_alias" &&
 
 
 # Override default
-test "$sysconfdir" = '${prefix}/etc' && sysconfdir='/etc'
+# test "$sysconfdir" = '${prefix}/etc' && sysconfdir='/etc'
 
 ac_config_headers="$ac_config_headers config.h"
 
@@ -6613,7 +6613,8 @@ fi
 
 
 temp_mandir=`eval echo $mandir` ; temp_mandir=`eval echo $temp_mandir`
-
+temp_sysconfdir=`eval echo ${sysconfdir}`
+sysconfdir=$temp_sysconfdir
 echo "Configuration summary:"
 echo "======================"
 echo ""
@@ -6626,13 +6627,13 @@ echo "  Version..................: $VERSION"
 echo ""
 echo "  Installation prefix......: $prefix"
 echo "  Man directory............: $temp_mandir"
-echo "  sysconfdir...............: $sysconfdir"
-echo -n "  recording input..........: "
+echo "  sysconfdir...............: ${sysconfdir}"
 if test $recordinput = "1"; then
-echo "yes"
+recording="yes"
 else
-echo "no"
+recording="no"
 fi
+echo "  recording input..........: $recording"
 echo ""
 echo "If this summary looks good, type 'make' or 'gmake' to compile"
 echo "then 'make install' or 'gmake install' as root to install the"
