@@ -12,3 +12,4 @@ sudosh.conf.5
 stamp-h1
 src/.deps/
 autom4te.cache/
+.idea
