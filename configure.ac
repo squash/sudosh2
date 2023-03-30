@@ -147,14 +147,15 @@ AC_SUBST([VLOGDIR])
 AC_SUBST([VFDL])
 AC_SUBST([PREFIX])
 
+temp_mandir=`eval echo $mandir` ; temp_mandir=`eval echo $temp_mandir`
+temp_sysconfdir=`eval echo ${sysconfdir}`
+sysconfdir=$temp_sysconfdir
+
 AC_DEFINE_UNQUOTED(SYSCONFDIR,"$sysconfdir", [directory to place sudosh.conf])
 AC_CONFIG_FILES([Makefile src/Makefile src/sudosh.conf sudosh.1 sudosh-replay.8 sudosh.conf.5])
 CFLAGS="$CFLAGS -Werror"
 AC_OUTPUT
 
-temp_mandir=`eval echo $mandir` ; temp_mandir=`eval echo $temp_mandir`
-temp_sysconfdir=`eval echo ${sysconfdir}`
-sysconfdir=$temp_sysconfdir
 echo "Configuration summary:"
 echo "======================"
 echo ""
