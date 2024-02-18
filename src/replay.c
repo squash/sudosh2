@@ -36,7 +36,7 @@ int getopt (int, char *const[], const char *);
 extern char *optarg;
 extern int optind;
 
-char match[BUFSIZ];
+char match[BUFSIZ-1];
 
 char *progname;
 session *s_top;
@@ -58,7 +58,7 @@ main (int argc, char **argv, char **environ)
 {
   int c;
   char *p = (char *) 0;
-  char sysconfdir[BUFSIZ];
+  char sysconfdir[BUFSIZ-1];
   struct dirent *dirp;
   DIR *dp;
   session *scan;
@@ -161,10 +161,10 @@ main (int argc, char **argv, char **environ)
   while ((dirp = readdir (dp)) != (struct dirent *) 0)
     {
       session *s;
-      char from[BUFSIZ];
-      char to[BUFSIZ];
-      char type[BUFSIZ];
-      char randstr[BUFSIZ];
+      char from[BUFSIZ-1];
+      char to[BUFSIZ-1];
+      char type[BUFSIZ-1];
+      char randstr[BUFSIZ-1];
       time_t e;
 
       if (strncmp (dirp->d_name, ".", 1) == 0)
@@ -252,10 +252,10 @@ main (int argc, char **argv, char **environ)
 	    }
 
 	  s->e = e;
-	  strncpy (s->from, from, BUFSIZ - 1);
-	  strncpy (s->to, to, BUFSIZ - 1);
-	  strncpy (s->type, type, BUFSIZ - 1);
-	  strncpy (s->randstr, randstr, BUFSIZ - 1);
+	  strncpy (s->from, from, BUFSIZ);
+	  strncpy (s->to, to, BUFSIZ );
+	  strncpy (s->type, type, BUFSIZ);
+	  strncpy (s->randstr, randstr, BUFSIZ);
 	  strftime (s->date, 20, "%m/%d/%Y %H:%M:%S", localtime (&s->e));
 	  snprintf (s->id, BUFSIZ - 1, "%.128s%c%.128s%c%ld%c%.128s", s->from,
 		    config_option.fdl, s->to, config_option.fdl, s->e,
@@ -290,7 +290,7 @@ main (int argc, char **argv, char **environ)
     {
       char from[BUFSIZ];
       char to[BUFSIZ];
-      char randstr[BUFSIZ];
+      char randstr[BUFSIZ-1];
       time_t e;
       int div, maxwait;
       session *s;
