@@ -153,7 +153,6 @@ sysconfdir=$temp_sysconfdir
 
 AC_DEFINE_UNQUOTED(SYSCONFDIR,"$sysconfdir", [directory to place sudosh.conf])
 AC_CONFIG_FILES([Makefile src/Makefile src/sudosh.conf sudosh.1 sudosh-replay.8 sudosh.conf.5])
-CFLAGS="$CFLAGS -Werror"
 AC_OUTPUT
 
 echo "Configuration summary:"
